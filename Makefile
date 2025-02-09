@@ -7,5 +7,4 @@ run:
 	docker compose up
 
 test:
-	docker compose up
 	go test -v ./test

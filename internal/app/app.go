@@ -25,6 +25,12 @@ func NewService(config *config.Config, server *controller.Server) *App {
 	gin.SetMode(config.GinMode)
 	r := gin.Default()
 
+	r.StaticFile("/openapi.yaml", "./api/openapi.yaml")
+	r.LoadHTMLGlob("templates/*")
+	r.GET("/swagger", func(c *gin.Context) {
+		c.HTML(200, "swagger.html", nil)
+	})
+
 	api.RegisterHandlers(r, server)
 
 	return &App{
