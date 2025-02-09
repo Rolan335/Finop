@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: Financial Operations API
+  version: 1.0.0
+  description: API для управления финансовыми операциями пользователей
+
+paths:
+  /users:
+    post:
+      summary: Добавление нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "username"
+                  minLength: 8
+                  description: "must be unique"
+      responses:
+        '201':
+          description: Пользователь успешно создан
+        '409':
+          description: Пользователь уже существует
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /users/{username}/balance:
+    post:
+      summary: Пополнение баланса пользователя
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  example: 100.0
+                  minimum: 1.0
+      responses:
+        '200':
+          description: Новый баланс пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+                    example: 200.0
+        '400':
+          description: Invalid amount
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  /users/{username}/transfer:
+    post:
+      summary: Перевод денег от одного пользователя к другому
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receiver:
+                  type: string
+                  example: "receiver123"
+                amount:
+                  type: number
+                  example: 50.0
+                  minimum: 1.0
+      responses:
+        '200':
+          description: Новый баланс пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+                    example: 200.0
+        '400':
+          description: Invalid amount
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode:
+                    type: string
+                    example: "user_not_found"
+                  message:
+                    type: string
+                    example: "sender or receiver not found"
+        '500':
+          description: Internal server error
+  /users/{username}/transactions:
+    get:
+      summary: Просмотр 10 последних операций пользователя
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список последних операций
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    transactionId:
+                      type: string
+                      format: uuid
+                      example: "123e4567-e89b-12d3-a456-426614174000"
+                    operation:
+                      type: string
+                      example: "deposit"
+                    receiver:
+                      type: string
+                      example: "receiver123"
+                    amount:
+                      type: number
+                      example: 100.0
+                    time:
+                      type: string
+                      format: date-time
+                      example: "2025-02-07T12:00:00Z"
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
