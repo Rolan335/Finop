@@ -1,4 +1,4 @@
-.PHONY generate run test
+.PHONY: generate run test
 
 generate:
 	go generate cmd/main.go
